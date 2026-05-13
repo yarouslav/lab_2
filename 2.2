@@ -1,0 +1,40 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// Один спільний пін для всіх датчиків
+const int ONE_WIRE_BUS = 4;
+
+// Одна шина OneWire
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Один об'єкт для всіх датчиків
+DallasTemperature sensors(&oneWire);
+
+void setup() {
+  Serial.begin(115200);
+
+  sensors.begin();
+
+  Serial.println("Тестування двох датчиків на одному піні...");
+  Serial.println("----------------------------------------");
+}
+
+void loop() {
+  // Запит на вимірювання для всіх датчиків на шині
+  sensors.requestTemperatures();
+
+  // Зчитування по індексу
+  float temp1 = sensors.getTempCByIndex(0);
+  float temp2 = sensors.getTempCByIndex(1);
+
+  Serial.print("Датчик 1: ");
+  Serial.print(temp1);
+  Serial.print(" °C  |  ");
+
+  Serial.print("Датчик 2: ");
+  Serial.print(temp2);
+  Serial.println(" °C");
+
+  delay(1000);
+}
+
