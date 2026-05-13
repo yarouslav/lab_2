@@ -1,0 +1,59 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// --- Піни ---
+#define ONE_WIRE_BUS 4   // DS18B20
+#define LDR_PIN 34       // Фоторезистор (ADC)
+
+// --- Ініціалізація ---
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+// Для зберігання адрес датчиків
+DeviceAddress sensor1, sensor2;
+
+void setup() {
+  Serial.begin(115200);
+
+  sensors.begin();
+
+  // Перевірка кількості датчиків
+  Serial.print("Кількість DS18B20: ");
+  Serial.println(sensors.getDeviceCount());
+
+  // Отримання адрес
+  if (!sensors.getAddress(sensor1, 0)) {
+    Serial.println("Не знайдено датчик 1");
+  }
+  if (!sensors.getAddress(sensor2, 1)) {
+    Serial.println("Не знайдено датчик 2");
+  }
+}
+
+void loop() {
+  // Запит температури
+  sensors.requestTemperatures();
+
+  float temp1 = sensors.getTempC(sensor1);
+  float temp2 = sensors.getTempC(sensor2);
+
+  // Зчитування фоторезистора
+  int lightValue = analogRead(LDR_PIN);
+
+  // Вивід
+  Serial.println("------ Дані ------");
+
+  Serial.print("Температура 1: ");
+  Serial.print(temp1);
+  Serial.println(" °C");
+
+  Serial.print("Температура 2: ");
+  Serial.print(temp2);
+  Serial.println(" °C");
+
+  Serial.print("Освітленість (ADC): ");
+  Serial.println(lightValue);
+
+  delay(2000);
+}
+
