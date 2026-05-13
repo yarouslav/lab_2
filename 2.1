@@ -1,0 +1,33 @@
+#define LDR_PIN 14      // Примітка: у коментарі було GPIO12, але пін 14. Переконайся, що підключено до 14!
+#define LED_DAC 26      // GPIO26 - DAC
+
+int adcValue = 0;
+int dacValue = 0;
+
+void setup() {
+  Serial.begin(115200);
+}
+
+void loop() {
+  // Зчитування з фоторезистора
+  adcValue = analogRead(LDR_PIN);
+
+  // Масштабування та ІНВЕРСІЯ: 0–4095 -> 255–0
+  dacValue = map(adcValue, 0, 4095, 255, 0);
+
+  // Обмеження на всякий випадок (map іноді може виходити за межі, якщо АЦП "шумить")
+  if (dacValue > 255) dacValue = 255;
+  if (dacValue < 0) dacValue = 0;
+
+  // Запис у ЦАП
+  dacWrite(LED_DAC, dacValue);
+
+  // Вивід значень у монітор порту для перевірки
+  Serial.print("ADC (Світло): ");
+  Serial.print(adcValue);
+  Serial.print(" | DAC (Діод): ");
+  Serial.println(dacValue);
+
+  delay(500);
+}
+
